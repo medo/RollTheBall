@@ -114,10 +114,8 @@ public class Board implements State {
 		int i = startI + d.i;
 		int j = startJ + d.j;
 		while (i < n && i >= 0 && j < m && j >= 0) {
-//			System.out.println("(" + i + "," + j + ") but goalI " + goalI + " and goalJ " + goalJ);
 			if (i == goalI && j == goalJ){
 				if (Tile.isGoal(Tile.decode(board[i][j])) && Tile.getOneDirection(Tile.decode(board[i][j])).equals(d.opposite())){
-//					System.out.println("Goaaaaal");
 					return true;
 				}
 				else break;
@@ -131,7 +129,6 @@ public class Board implements State {
 				first = false;
 				if (!directions.second.equals(d.opposite())) return false;
 			}
-//			System.out.println(first);
 			i += first? directions.second.i : directions.first.i ;
 			j += first? directions.second.j : directions.first.j ;
 			d =  first? directions.second 	: directions.first;

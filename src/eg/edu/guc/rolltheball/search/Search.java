@@ -41,28 +41,20 @@ public class Search {
 	
 	public Solution search() {
 		Solution solution = null;
-		
-		int numberOfNodes = 1;
-		HashSet<State> visited = new HashSet<State>();
 		Node initialNode = new Node(null, 0, 0, null, problem.getInitialState());
 		queue.enqueue(initialNode);
-		visited.add(problem.getInitialState());
-		
 		while (!queue.isDone()) {
 			Node top = queue.dequeue();
-//			System.out.println(top.getState());
 			if (problem.isGoal(top.getState())) {
 				List<Action> path = constructActionPath(top); 
-				solution = new Solution(path, top.getCost(), numberOfNodes);
+				solution = new Solution(path, top.getCost(), queue.getNumberOfVistedNodes());
 				break;
 			}
 			Map<Action, State> adj = problem.getAdjacentStates(top.getState());
 			for (Action a : adj.keySet()) {
 				State v;
-				if (!visited.contains(v = adj.get(a))) {
-					visited.add(v);
+				if (!queue.isVisited(v = adj.get(a))) {
 					Node node = new Node(top, top.getDepth() + 1, top.getCost() + a.getCost(), a, v);
-					numberOfNodes++;
 					queue.enqueue(node);
 				}
 			}

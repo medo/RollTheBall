@@ -1,29 +1,42 @@
 package eg.edu.guc.rolltheball.search;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
-import eg.edu.guc.rolltheball.generic.Action;
+import eg.edu.guc.rolltheball.generic.Heuristic;
 import eg.edu.guc.rolltheball.generic.Node;
 import eg.edu.guc.rolltheball.generic.Problem;
 import eg.edu.guc.rolltheball.generic.QueueStrategy;
-import eg.edu.guc.rolltheball.generic.Solution;
 import eg.edu.guc.rolltheball.generic.State;
-import eg.edu.guc.rolltheball.util.Pair;
 
-
-public class BFS extends Search {
-
+public class Greedy extends Search {
 	
-	public BFS(Problem problem) {
+	static class Element implements Comparable<Element>{
+		
+		Node node;
+		double cost;
+
+		Element(Node n, double cost) {
+			node = n;
+			this.cost = cost;
+		}
+		
+		@Override
+		public int compareTo(Element e) {
+			double cost1 = cost;
+			double cost2 = e.cost;
+			if (cost1 < cost2) return -1;
+			if (cost1 > cost2) return 1;
+			return 0;
+		}
+	}
+	
+	public Greedy(Problem problem, final Heuristic heuristic) {
 		super(problem, new QueueStrategy() {
 			
-			Queue<Node> queue = new LinkedList<Node>();
+			PriorityQueue<Element> queue = new PriorityQueue<Greedy.Element>();
 			HashSet<State> visited = new HashSet<State>();
 			int numberOfNodes = 1;
 			
@@ -34,14 +47,14 @@ public class BFS extends Search {
 			
 			@Override
 			public void enqueue(Node node) {
-				numberOfNodes++;
+				Element e = new Element(node, heuristic.getCost(node.getState()));
 				visited.add(node.getState());
-				queue.add(node);
+				queue.add(e);
 			}
 			
 			@Override
 			public Node dequeue() {
-				return queue.poll();
+				return queue.poll().node;
 			}
 
 			@Override
@@ -55,4 +68,5 @@ public class BFS extends Search {
 			}
 		});
 	}
+	
 }
