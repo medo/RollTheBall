@@ -140,12 +140,31 @@ public class Board implements State {
 
 	@Override
 	public String toString() {
-		String result = "";
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				result += Tile.decode(board[i][j]) + ",";
+		char[][] b = new char[3*n][3*m];
+		for (int i = 0; i < 3*n; i+=3) {
+			for (int j = 0; j < 3*m; j+=3) {
+			    String tmp = Tile.decode(board[i/3][j/3]);
+			    char[][] x = Tile.visualize(tmp);
+			    for(int q=0;q<3;q++)
+			        for(int w=0;w<3;w++)
+			            b[i+q][j+w] = x[q][w];
 			}
-			result += System.lineSeparator();
+		}
+		String newLine = "";
+		for(int i=0;i<3*m;i++)
+		    newLine += " ";
+		newLine += "\n";
+		String result = "";
+		for(int i=0;i<b.length;i++){
+		    if(i != 0 && i%3 == 0)
+                result+= newLine;
+		    for(int j=0;j<b[0].length;j++){
+		        if(j != 0 && j%3 == 0)
+                    result+= ' ';
+		        result += b[i][j];
+		    }
+
+		    result += System.lineSeparator();
 		}
 		return result;
 	}
