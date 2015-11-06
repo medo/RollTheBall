@@ -10,6 +10,7 @@ import eg.edu.guc.rolltheball.generic.Node;
 import eg.edu.guc.rolltheball.generic.Problem;
 import eg.edu.guc.rolltheball.generic.QueueStrategy;
 import eg.edu.guc.rolltheball.generic.State;
+import eg.edu.guc.rolltheball.impl.GreedyBoardHeuristic;
 
 public class Greedy extends Search {
 	
@@ -31,6 +32,10 @@ public class Greedy extends Search {
 			if (cost1 > cost2) return 1;
 			return 0;
 		}
+	}
+	
+	public static Greedy createInstance(Problem p) {
+		return new Greedy(p, new GreedyBoardHeuristic());
 	}
 	
 	public Greedy(Problem problem, final Heuristic heuristic) {

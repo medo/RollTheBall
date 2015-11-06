@@ -60,11 +60,8 @@ public class Board implements State {
 		board[3][2] = Tile.encode(Tile.getPath(Direction.WEST, Direction.EAST, false));
 		board[3][3] = Tile.encode(Tile.getPath(Direction.WEST, Direction.NORTH, false));
 		
-=======
+		//board = generateRandomBoard(n, m);
 
-		board = generateRandomBoard(n, m);
-
->>>>>>> a5cca020cf18dd632a9ff63361b427f8e40d91f5
 	}
 
 	void setBoard(int[][] board) {
