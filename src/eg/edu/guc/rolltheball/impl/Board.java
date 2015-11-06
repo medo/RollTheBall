@@ -5,13 +5,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import eg.edu.guc.rolltheball.generic.Action;
 import eg.edu.guc.rolltheball.generic.State;
 import eg.edu.guc.rolltheball.util.Pair;
 
 public class Board implements State {
-	
+
 	int[][] board;
 	int goalI;
 	int goalJ;
@@ -19,15 +20,15 @@ public class Board implements State {
 	int startJ;
 	int n;
 	int m;
-	
+
 	public static Board createBoard(int n, int m) {
-		return new Board(2, 3, 0, 0, 1, 2);
+		return new Board(n,m);
 	}
-	
+
 	private Board(Board b) {
 		this(b.n, b.m, b.startI, b.startJ, b.goalI, b.goalJ);
 	}
-	
+
 	private Board(int n, int m, int sI, int sJ, int gI, int gJ) {
 		this(n, m);
 		this.startI = sI;
@@ -35,22 +36,16 @@ public class Board implements State {
 		this.goalI = gI;
 		this.goalJ = gJ;
 	}
-	
+
 	private Board(int n, int m) {
 		this.m = m;
 		this.n = n;
 		board = new int[n][m];
-	
-		//Should be random
-		board[0][0] = Tile.encode(Tile.getInitial(Direction.EAST));
-		board[0][1] = Tile.encode(Tile.getBlank());
-		board[0][2] = Tile.encode(Tile.getPath(Direction.WEST, Direction.SOUTH, true));
-		board[1][0] = Tile.encode(Tile.getBlank());
-		board[1][1] = Tile.encode(Tile.getPath(Direction.WEST, Direction.EAST, true));
-		board[1][2] = Tile.encode(Tile.getGoal(Direction.NORTH));
-		
+
+		board = generateRandomBoard(n, m);
+
 	}
-	
+
 	void setBoard(int[][] board) {
 		this.board = board;
 	}
@@ -72,7 +67,7 @@ public class Board implements State {
 		}
 		return result;
 	}
-	
+
 	State applyOperation(int i, int j, Direction d) {
 		int newI = i + d.i;
 		int newJ = j + d.j;
@@ -85,14 +80,14 @@ public class Board implements State {
 		result.setBoard(newBoard);
 		return result;
 	}
-	
+
 	List<Direction> getPossibleDirection(int i, int j) {
 		List<Direction> result = null;
 		if (Tile.isMovable(Tile.decode(board[i][j]))) {
 			result = new ArrayList<Direction>();
 			if (i - 1 >= 0 && Tile.isBlank(Tile.decode(board[i - 1][j]))) {
 				result.add(Direction.NORTH);
-			} 
+			}
 			if (j + 1 < m && Tile.isBlank(Tile.decode(board[i][j + 1]))) {
 				result.add(Direction.EAST);
 			}
@@ -125,7 +120,7 @@ public class Board implements State {
 			}
 			Pair<Direction, Direction> directions = Tile.getTwoDirections(Tile.decode(board[i][j]));
 			boolean first = true;
-			if (!directions.first.equals(d.opposite())){ 
+			if (!directions.first.equals(d.opposite())){
 				first = false;
 				if (!directions.second.equals(d.opposite())) return false;
 			}
@@ -134,15 +129,15 @@ public class Board implements State {
 			d =  first? directions.second 	: directions.first;
 		}
 		return false;
-		
+
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		Board b = (Board) obj;
 		return Arrays.deepEquals(board, b.board);
 	}
-	
+
 	@Override
 	public String toString() {
 		String result = "";
@@ -154,16 +149,51 @@ public class Board implements State {
 		}
 		return result;
 	}
-	
-	
+
+
 	@Override
-	public int hashCode() { 
+	public int hashCode() {
 		//TODO optimize
 		String result = "";
 		for (int i = 0; i < n; i++) for (int j = 0; j < m; j++) result += board[i][j];
 		return result.hashCode();
-		
-		
+
+
 	}
-	
+
+	public static int[][] generateRandomBoard(int n, int m){
+	    Random r = new Random();
+	    Direction[] d = new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+
+	    int[][] board = new int[n][m];
+
+	    for(int i=0;i<n;i++){
+	        for(int j=0;j<m;j++){
+	            int tileType = r.nextInt(3);
+	            if(tileType == 0){
+	                board[i][j] = Tile.encode(Tile.getBlock());
+	            }else if(tileType == 1){
+	                board[i][j] = Tile.encode(Tile.getBlank());
+	            }else if(tileType == 2){
+	                int dir1 = r.nextInt(4);
+	                int dir2 = dir1;
+	                while(dir2 == dir1)
+	                    dir2 = r.nextInt(4);
+	                boolean movable = r.nextBoolean();
+	                board[i][j] = Tile.encode(Tile.getPath(d[dir1], d[dir2], movable));
+	            }
+	        }
+	    }
+
+	    int goalI = r.nextInt(n), goalJ = r.nextInt(m);
+	    board[goalI][goalJ] = Tile.encode(Tile.getGoal(d[r.nextInt(4)]));
+	    int initI, initJ;
+	    do{
+	        initI = r.nextInt(n);
+	        initJ = r.nextInt(m);
+	    }while(initI == goalI && goalJ == initJ);
+	    board[initI][initJ] = Tile.encode(Tile.getInitial(d[r.nextInt(4)]));
+        return board;
+	}
+
 }
