@@ -49,6 +49,7 @@ public class IterativeDeepening extends Search{
 				if (queue.isEmpty() && !treeExplored) {
 					depth++;
 					queue.push(root);
+					visited = new HashSet<State>();
 					treeExplored = true;
 				}
 				return result;
