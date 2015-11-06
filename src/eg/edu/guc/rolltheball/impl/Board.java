@@ -22,7 +22,8 @@ public class Board implements State {
 	int m;
 
 	public static Board createBoard(int n, int m) {
-		return new Board(n,m, false);
+		return new Board(4, 4, 1, 1, 1, 3);
+		//return new Board(n,m, false);
 	}
 
 	private Board(Board b) {
@@ -43,7 +44,26 @@ public class Board implements State {
 	private Board(int n, int m, boolean keepStarts) {
 		this.m = m;
 		this.n = n;
-		board = generateRandomBoard(n, m, keepStarts);
+		board = new int[n][m];
+		//Should be random
+		board[0][0] = Tile.encode(Tile.getBlock());
+		board[0][1] = Tile.encode(Tile.getBlock());
+		board[0][2] = Tile.encode(Tile.getBlock());
+		board[0][3] = Tile.encode(Tile.getBlock());
+		board[1][0] = Tile.encode(Tile.getBlock());
+		board[1][1] = Tile.encode(Tile.getInitial(Direction.SOUTH));
+		board[1][2] = Tile.encode(Tile.getBlock());
+		board[1][3] = Tile.encode(Tile.getGoal(Direction.SOUTH));
+		board[2][0] = Tile.encode(Tile.getPath(Direction.NORTH, Direction.EAST, true));
+		board[2][1] = Tile.encode(Tile.getPath(Direction.NORTH, Direction.SOUTH, true));
+		board[2][2] = Tile.encode(Tile.getPath(Direction.NORTH, Direction.SOUTH, true));
+		board[2][3] = Tile.encode(Tile.getBlank());
+		board[3][0] = Tile.encode(Tile.getBlank());
+		board[3][1] = Tile.encode(Tile.getBlank());
+		board[3][2] = Tile.encode(Tile.getPath(Direction.WEST, Direction.EAST, false));
+		board[3][3] = Tile.encode(Tile.getPath(Direction.WEST, Direction.NORTH, false));
+		
+		//board = generateRandomBoard(n, m, keepStarts);
 	}
 
 	void setBoard(int[][] board) {

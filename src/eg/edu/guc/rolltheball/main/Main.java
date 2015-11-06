@@ -3,6 +3,7 @@ package eg.edu.guc.rolltheball.main;
 import eg.edu.guc.rolltheball.generic.Solution;
 import eg.edu.guc.rolltheball.impl.BoardProblem;
 import eg.edu.guc.rolltheball.search.BFS;
+import eg.edu.guc.rolltheball.search.Greedy;
 import eg.edu.guc.rolltheball.search.Search;
 
 public class Main {
@@ -11,9 +12,9 @@ public class Main {
 
 		BoardProblem p = new BoardProblem(4, 4);
 		System.out.println(p.getInitialState());
-		Search b = new BFS(p);
+		Search b = Greedy.createInstance(p);
 		Solution s = b.search();
-		System.out.println(s.toString());
+		//System.out.println(s.toString());
 	}
 
 }
