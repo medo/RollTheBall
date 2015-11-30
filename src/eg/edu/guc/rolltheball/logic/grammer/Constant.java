@@ -9,6 +9,11 @@ public class Constant extends Term {
     }
 
     @Override
+    public Constant clone(){
+        return new Constant(name);
+    }
+
+    @Override
     public String toString() {
         return name;
     }

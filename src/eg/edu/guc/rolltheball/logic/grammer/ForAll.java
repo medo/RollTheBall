@@ -11,6 +11,6 @@ public class ForAll extends Quantifier implements Formula {
 
     @Override
     public String toString() {
-        return "∀ " + var + "(" + formula + ")";
+        return "∀" + var + "(" + formula + ")";
     }
 }
