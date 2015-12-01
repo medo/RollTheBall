@@ -95,7 +95,7 @@ public class CNF {
 			((BinaryOperator) f).left = pushNots(((BinaryOperator) f).left);
 			((BinaryOperator) f).right = pushNots(((BinaryOperator) f).right);
 		} else if (f instanceof Quantifier) {
-			((Quantifier) f).formula = removeImplications(((Quantifier) f).formula);
+			((Quantifier) f).formula = pushNots(((Quantifier) f).formula);
 		} else if (f instanceof Predicate) {
 			// Do Nothing
 		}
