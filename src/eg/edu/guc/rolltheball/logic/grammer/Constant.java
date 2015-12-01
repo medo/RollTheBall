@@ -17,4 +17,13 @@ public class Constant extends Term {
     public String toString() {
         return name;
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Constant)
+            return ((Constant) obj).hashCode() == hashCode();
+        else
+            return false;
+    }
 }
