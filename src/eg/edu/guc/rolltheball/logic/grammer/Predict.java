@@ -24,6 +24,9 @@ public class Predict implements Formula {
         String s = buf.toString();
         if(s.length() > 0 && s.charAt(s.length()-1) == ',')
             s = s.substring(0, s.length()-1);
-        return name + "(" + s + ")";
+        if(terms.size() == 0)
+            return name;
+        else
+            return name + "(" + s + ")";
     }
 }

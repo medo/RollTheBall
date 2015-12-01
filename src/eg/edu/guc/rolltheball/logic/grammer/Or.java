@@ -11,7 +11,7 @@ public class Or extends BinaryOperator implements Formula {
 
     @Override
     public String toString() {
-        return "(" + left + "∨" + right + ")";
+        return "(" + left + " ∨ " + right + ")";
     }
 
 }
