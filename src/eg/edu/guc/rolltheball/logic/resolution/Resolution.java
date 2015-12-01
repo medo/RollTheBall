@@ -35,7 +35,9 @@ public class Resolution {
 	
 	public static void main(String[] args) {
 		Formula test = new Or(new Predicate("p"), new Not(new Predicate("p")));
-        new CNF().convertToCNF(test);
+        List<Clause> cnf = new CNF().convertToCNF(test);
+        Resolution r = new Resolution(cnf);
+        System.out.println(r.isContradiction());
 	}
 	
 

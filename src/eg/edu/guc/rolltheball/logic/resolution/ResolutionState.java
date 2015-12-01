@@ -45,8 +45,9 @@ public class ResolutionState implements State {
 							HashMap<Variable, Term> sub = Unificiation.unify(lit1.predicate, lit2.predicate);
 							if (sub == null) continue;
 							Clause clause = new Clause();
-							for (Literal l1 : formula.get(i)) if (l1.toString() != lit1.toString()) clause.add(Unificiation.sub(sub, l1));
-							for (Literal l2 : formula.get(j)) if (l2.toString() != lit2.toString()) clause.add(Unificiation.sub(sub, l2));
+							for (Literal l1 : formula.get(i)) if (!l1.toString().equals(lit1.toString())) clause.add(Unificiation.sub(sub, l1));
+							for (Literal l2 : formula.get(j)) if (!l2.toString().equals(lit2.toString())) clause.add(Unificiation.sub(sub, l2));
+							System.out.println("STATE: " + clause);
 							if (!contains(clause)) {
 								//This is a new state
 								Action a = new ResolutionAction(sub);
