@@ -1,6 +1,7 @@
 package eg.edu.guc.rolltheball.logic.grammer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Function extends Term{
     public String name;
@@ -32,6 +33,29 @@ public class Function extends Term{
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+    	HashMap<Variable, Variable> sub = new HashMap<Variable, Variable>();
+    	Function fun = (Function) obj;
+    	if (fun.name.equals(fun.name)) {
+    		for (Term t : fun.terms) {
+    			for (Term t1 : terms) {
+    				if (t instanceof Variable && t1 instanceof Variable){
+    					Variable v1 = (Variable) t;
+    					Variable v2 = (Variable) t1;
+    					if (sub.containsKey(v1) && sub.get(v1) != v2 || sub.containsKey(v2) && sub.get(v2) != v1) return false;
+    					sub.put(v1, v2);
+    					continue;
+    				}
+    				if (t instanceof Variable || t1 instanceof Variable) return false;
+    				if (!t.equals(t1)) return false;
+    			}
+    		}
+    		return true;
+    	}
+    	return false;
+    }
+    
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();

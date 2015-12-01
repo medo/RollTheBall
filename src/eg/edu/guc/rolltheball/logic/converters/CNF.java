@@ -12,7 +12,7 @@ import eg.edu.guc.rolltheball.logic.grammer.Function;
 import eg.edu.guc.rolltheball.logic.grammer.Implies;
 import eg.edu.guc.rolltheball.logic.grammer.Not;
 import eg.edu.guc.rolltheball.logic.grammer.Or;
-import eg.edu.guc.rolltheball.logic.grammer.Predict;
+import eg.edu.guc.rolltheball.logic.grammer.Predicate;
 import eg.edu.guc.rolltheball.logic.grammer.Quantifier;
 import eg.edu.guc.rolltheball.logic.grammer.Term;
 import eg.edu.guc.rolltheball.logic.grammer.ThereExist;
@@ -37,7 +37,7 @@ public class CNF {
             ((Not) f).formula = removeEquivilance(((Not) f).formula);
         }else if(f instanceof Quantifier ){
             ((Quantifier) f).formula = removeEquivilance(((Quantifier) f).formula);
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             // Do Nothing
         }
         return f;
@@ -56,7 +56,7 @@ public class CNF {
             ((Not) f).formula = removeImplications(((Not) f).formula);
         }else if(f instanceof Quantifier ){
             ((Quantifier) f).formula = removeImplications(((Quantifier) f).formula);
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             // Do Nothing
         }
         return f;
@@ -92,7 +92,7 @@ public class CNF {
             ((BinaryOperator) f).right = pushNots(((BinaryOperator) f).right);
         }else if(f instanceof Quantifier ){
             ((Quantifier) f).formula = removeImplications(((Quantifier) f).formula);
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             // Do Nothing
         }
         return f;
@@ -128,12 +128,12 @@ public class CNF {
             ((Quantifier) f).var.name = newVar;
             mapping.remove(oldVar);
 
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             ArrayList<Term> ts = new ArrayList<Term>();
-            for(Term t: ((Predict) f).terms){
+            for(Term t: ((Predicate) f).terms){
                 ts.add(changeTermVariable(t, mapping));
             }
-            ((Predict) f).terms = ts;
+            ((Predicate) f).terms = ts;
         }
         return f;
     }
@@ -170,12 +170,12 @@ public class CNF {
             sub.put(oldName, newFun);
             f = skolemize(((ThereExist) f).formula, boundVars, sub);
             sub.remove(oldName);
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             ArrayList<Term> ts = new ArrayList<Term>();
-            for(Term t: ((Predict) f).terms){
+            for(Term t: ((Predicate) f).terms){
                 ts.add(skolemizeTerm(t, sub));
             }
-            ((Predict) f).terms = ts;
+            ((Predicate) f).terms = ts;
         }
         return f;
     }
@@ -189,7 +189,7 @@ public class CNF {
             ((BinaryOperator) f).right = discardUniversalQuantifier(((BinaryOperator) f).right);
         }else if(f instanceof ForAll ){
             f = discardUniversalQuantifier(((ForAll) f).formula);
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             // Do Nothing
         }
         return f;
@@ -217,7 +217,7 @@ public class CNF {
                 ((Or) f).left = distributeAndsOrs(((Or) f).left);
                 ((Or) f).right = distributeAndsOrs(((Or) f).right);
             }
-        }else if(f instanceof Predict){
+        }else if(f instanceof Predicate){
             // Do Nothing
         }
         return f;
@@ -258,13 +258,13 @@ public class CNF {
 
     public static void main(String[] args){
 
-        Predict p1 = new Predict("Q", new Variable("x"));
+        Predicate p1 = new Predicate("Q", new Variable("x"));
 
-        Predict p2 = new Predict("Z", new Variable("y"));
+        Predicate p2 = new Predicate("Z", new Variable("y"));
 
         Formula p = new And(new Not(p1), p2);
 
-        Predict p3 = new Predict("P", new Variable("z"));
+        Predicate p3 = new Predicate("P", new Variable("z"));
 
         Formula x = new Equivalent(p, p3);
 
@@ -276,22 +276,22 @@ public class CNF {
 
         Formula zz = new And(
                 new ForAll(new Variable("x"), new ThereExist(
-                        new Variable("y"), new Predict("Q", new Variable("y"))
+                        new Variable("y"), new Predicate("Q", new Variable("y"))
                         )
                 ),
-                new ThereExist(new Variable("z"), new Predict("P", new Variable("z")))
+                new ThereExist(new Variable("z"), new Predicate("P", new Variable("z")))
                 );
 
         Formula xz = new Or(
-                    new And(new Predict("P", new Variable("x")), new Predict("Q", new Variable("x"))),
-                    new And(new Predict("S", new Variable("x")), new Predict("R", new Variable("x")))
+                    new And(new Predicate("P", new Variable("x")), new Predicate("Q", new Variable("x"))),
+                    new And(new Predicate("S", new Variable("x")), new Predicate("R", new Variable("x")))
                 );
 
         Formula test = new Or(
-                new And(new Predict("a"), new Predict("b")),
+                new And(new Predicate("a"), new Predicate("b")),
                 new And(
-                        new Not(new Predict("c")),
-                        new Or(new Predict("d"), new Predict("e"))
+                        new Not(new Predicate("c")),
+                        new Or(new Predicate("d"), new Predicate("e"))
                     )
                 );
 

@@ -2,11 +2,11 @@ package eg.edu.guc.rolltheball.logic.grammer;
 
 import java.util.ArrayList;
 
-public class Predict implements Formula {
+public class Predicate implements Formula {
     public String name;
     public ArrayList<Term> terms;
 
-    public Predict(String name, Term... terms) {
+    public Predicate(String name, Term... terms) {
         super();
         this.name = name;
         this.terms = new ArrayList<Term>();

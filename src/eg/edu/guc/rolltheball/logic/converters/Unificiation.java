@@ -7,7 +7,8 @@ import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import eg.edu.guc.rolltheball.logic.grammer.Constant;
 import eg.edu.guc.rolltheball.logic.grammer.Function;
-import eg.edu.guc.rolltheball.logic.grammer.Predict;
+import eg.edu.guc.rolltheball.logic.grammer.Literal;
+import eg.edu.guc.rolltheball.logic.grammer.Predicate;
 import eg.edu.guc.rolltheball.logic.grammer.Term;
 import eg.edu.guc.rolltheball.logic.grammer.Variable;
 
@@ -23,8 +24,12 @@ public class Unificiation {
 	 * union(theta,{s/r}) unify(subst(theta, p), subst(theta, q), theta) else
 	 * return "failure" end
 	 */
-
-	public static HashMap<Variable, Term> unify(Predict p, Predict q, HashMap<Variable, Term> theta) {
+	
+	public static HashMap<Variable, Term> unify(Predicate p, Predicate q) {
+		return unify_helper(p, q, new HashMap<Variable, Term>());
+	}
+	
+	public static HashMap<Variable, Term> unify_helper(Predicate p, Predicate q, HashMap<Variable, Term> theta) {
 		if (!q.name.equals(p.name)) {
 			System.out.println(p.toString());
 			System.out.println(q.toString());
@@ -49,9 +54,9 @@ public class Unificiation {
 		Term r = null;
 		Term s = null;
 
-		for (int i = 0; i < ((Predict) p).terms.size(); i++) {
-			r = ((Predict) p).terms.get(i);
-			s = ((Predict) q).terms.get(i);
+		for (int i = 0; i < ((Predicate) p).terms.size(); i++) {
+			r = ((Predicate) p).terms.get(i);
+			s = ((Predicate) q).terms.get(i);
 
 			if (!r.toString().equals(s)) {
 				System.out.println(p.toString());
@@ -65,7 +70,7 @@ public class Unificiation {
 								break;
 
 					theta.put((Variable) r, s);
-					return unify(subst(theta, p), subst(theta, q), theta);
+					return unify_helper(subst(theta, p), subst(theta, q), theta);
 				}
 
 				if (s instanceof Variable) {
@@ -75,13 +80,13 @@ public class Unificiation {
 								break;
 
 					theta.put((Variable) s, r);
-					return unify(subst(theta, p), subst(theta, q), theta);
+					return unify_helper(subst(theta, p), subst(theta, q), theta);
 				}
 
 				if ((r instanceof Function) && (s instanceof Function)
 						&& !((Function) r).toString().equals(((Function) s).toString())) {
 					theta = substFunc(r, s, theta);
-					return unify(subst(theta, p), subst(theta, q), theta);
+					return unify_helper(subst(theta, p), subst(theta, q), theta);
 
 				}
 			}
@@ -118,7 +123,14 @@ public class Unificiation {
 		return null;
 	}
 
-	private static Predict subst(HashMap<Variable, Term> theta, Predict x) {
+	public static Literal sub(HashMap<Variable, Term> theta, Literal l) {
+		Literal result = new Literal();
+		result.negated = l.negated;
+		result.predicate = subst(theta, l.predicate);
+		return result;
+	}
+	
+	public static Predicate subst(HashMap<Variable, Term> theta, Predicate x) {
 		for (Term term : x.terms) {
 			if (term instanceof Variable) {
 				if (theta.get((Variable) term) != null) {
@@ -158,12 +170,12 @@ public class Unificiation {
 		 Constant bill = new Constant("Bill");
 		 Function mother1 = new Function("mother", bill);
 		
-		 Predict p = new Predict("parents", new Term[] { x, father1, mother1
+		 Predicate p = new Predicate("parents", new Term[] { x, father1, mother1
 		 });
 		
 		 Variable y = new Variable("y");
 		 Function father = new Function("father", bill);
-		 Predict q = new Predict("parents", new Term[] { bill, father, y });
+		 Predicate q = new Predicate("parents", new Term[] { bill, father, y });
 
 		// P(x; g(x); g(f(a))) and P(f(u); v; v)
 
@@ -202,7 +214,7 @@ public class Unificiation {
 		// Function gOfG = new Function("g", gOfZ);
 		// Function gOfU = new Function("g", u);
 		// Predict q = new Predict("f", new Term[] { gOfU, gOfG, z });
-		System.err.println(unify(p, q, new HashMap<Variable, Term>()).toString());
+		System.err.println(unify_helper(p, q, new HashMap<Variable, Term>()).toString());
 	}
 
 }
