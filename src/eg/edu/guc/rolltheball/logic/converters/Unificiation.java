@@ -202,7 +202,7 @@ public class Unificiation {
 		// Predict q = new Predict("p", new Term[] { z, z, u });
 
 		// f(x; g(x); x) and f(g(u); g(g(z)); z)
-//
+
 //		 Variable x = new Variable("x");
 //		 Function gOfX = new Function("g", x);
 //		 Predict p = new Predict("f", new Term[] { x, gOfX, x });
