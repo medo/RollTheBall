@@ -18,7 +18,6 @@ public class Constant extends Term {
         return name;
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Constant)

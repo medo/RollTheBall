@@ -381,7 +381,7 @@ public class CNF {
 										new Variable("x")))))
 
 		));
-		System.out.println(new CNF().convertToCNF(Example2));
+		System.out.println(new CNF().convertToCNF(Example1));
 
 	}
 
