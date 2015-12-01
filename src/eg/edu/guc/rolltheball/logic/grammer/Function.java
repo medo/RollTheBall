@@ -65,7 +65,10 @@ public class Function extends Term{
         String s = buf.toString();
         if(s.length() > 0 && s.charAt(s.length()-1) == ',')
             s = s.substring(0, s.length()-1);
-        return name + "(" + s + ")";
+        if(terms.size() > 0)
+            return name + "(" + s + ")";
+        else
+            return name;
     }
 
 

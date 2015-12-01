@@ -8,7 +8,6 @@ public class Literal {
 	
     public Predicate predicate;
     public boolean negated;
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -32,5 +31,10 @@ public class Literal {
     		return true;
     	}
     	return false;
+    }
+
+    @Override
+    public String toString(){
+        return (negated? "¬" : "") + predicate.toString();
     }
 }
