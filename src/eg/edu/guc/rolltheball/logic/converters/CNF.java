@@ -31,7 +31,7 @@ public class CNF {
         if(f instanceof Equivalent){
             Equivalent tmp = (Equivalent) f;
             // Remove it to double implications
-            f = new And(new Implies(tmp.left, tmp.right), new Implies(tmp.right, tmp.left));
+            f = new And(new Implies(Cloner.clone(tmp.left), Cloner.clone(tmp.right)), new Implies(Cloner.clone(tmp.right), Cloner.clone(tmp.left)));
             f = removeEquivilance(f);
         }else if(f instanceof BinaryOperator){
             ((BinaryOperator) f).left = removeEquivilance(((BinaryOperator) f).left);
@@ -94,7 +94,7 @@ public class CNF {
             ((BinaryOperator) f).left = pushNots(((BinaryOperator) f).left);
             ((BinaryOperator) f).right = pushNots(((BinaryOperator) f).right);
         }else if(f instanceof Quantifier ){
-            ((Quantifier) f).formula = removeImplications(((Quantifier) f).formula);
+            ((Quantifier) f).formula = pushNots(((Quantifier) f).formula);
         }else if(f instanceof Predict){
             // Do Nothing
         }
@@ -371,7 +371,27 @@ public class CNF {
                 );
 
 
-        System.out.println(new CNF().convertToCNF(zz));
+        Formula Example1 = new ThereExist(new Variable("x"), new And(
+                    new Predict("P", new Variable("x")),
+                    new ForAll(new Variable("x"), new Implies(
+                            new Predict("Q", new Variable("x")),
+                            new Not(new Predict("P", new Variable("x")))
+                     ))
+                ));
+
+        Formula Example2 = new ForAll(new Variable("x"), new Equivalent(
+                    new Predict("P", new Variable("x")),
+                    new And(
+                        new Predict("Q", new Variable("x")),
+                        new ThereExist(new Variable("y"), new And(
+                            new Predict("Q", new Variable("y")),
+                            new Predict("R", new Variable("y"), new Variable("x"))
+                           )
+                        )
+                     )
+
+                ));
+        System.out.println(new CNF().convertToCNF(Example2));
 
     }
 

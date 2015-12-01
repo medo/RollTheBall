@@ -28,6 +28,10 @@ public class Cloner {
                     ts.add(((Variable) t).clone());
             }
             ret = new Predict(((Predict) f).name, ts.toArray(new Term[ts.size()]));
+        }else if(f instanceof ForAll){
+            ret = new ForAll(((ForAll) f).var.clone(), clone(((ForAll) f).formula));
+        }else if(f instanceof ThereExist){
+            ret = new ThereExist(((ThereExist) f).var.clone(), clone(((ThereExist) f).formula));
         }
         return ret;
     }
