@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eg.edu.guc.rolltheball.logic.grammer.Constant;
+import eg.edu.guc.rolltheball.logic.grammer.Formula;
 import eg.edu.guc.rolltheball.logic.grammer.Function;
 import eg.edu.guc.rolltheball.logic.grammer.Predict;
 import eg.edu.guc.rolltheball.logic.grammer.Term;
@@ -23,71 +24,79 @@ public class Unificiation {
 	 * return "failure" end
 	 */
 
-	public static boolean unify(Predict p, Predict q) {
-		if (!q.name.equals(p.name)) {
-			System.out.println(p.toString());
-			System.out.println(q.toString());
-			System.out.println("-------------------------------------");
-			theta.clear();
-			return false;
-		}
+	public static boolean unify(Formula p, Formula q) {
 
-		if (q.toString().equals(p.toString())) {
-			System.out.println(p.toString());
-			System.out.println(q.toString());
-			System.out.println("-------------------------------------");
-			return true;
-		}
-
-		if (q.terms.size() != p.terms.size()) {
-			System.out.println(p.toString());
-			System.out.println(q.toString());
-			System.out.println("-------------------------------------");
-			theta.clear();
-			return false;
-		}
-		Term r = null;
-		Term s = null;
-
-		for (int i = 0; i < p.terms.size(); i++) {
-			r = p.terms.get(i);
-			s = q.terms.get(i);
-			if (!r.toString().equals(s)) {
+		if ((q instanceof Predict) && (p instanceof Predict)) {
+			if (!((Predict) q).name.equals(((Predict) p).name)) {
 				System.out.println(p.toString());
 				System.out.println(q.toString());
 				System.out.println("-------------------------------------");
-				if (r instanceof Variable) {
-					if (s instanceof Function)
-						if (((Variable) r).name.equals(((Variable) ((Function) s).terms.get(0)).name))
-							break;
-					
-					Term[] terms = { r, s };
-					theta.add(terms);
-					return unify(subst(theta, p), subst(theta, q));
-				}
+				theta.clear();
+				return false;
+			}
 
-				if (s instanceof Variable) {
-					if (r instanceof Function)
-						if (((Variable) s).name.equals(((Variable) ((Function) r).terms.get(0)).name))
-							break;
-					
-					Term[] terms = { s, r };
-					theta.add(terms);
-					return unify(subst(theta, p), subst(theta, q));
-				}
+			if (q.toString().equals(p.toString())) {
+				System.out.println(p.toString());
+				System.out.println(q.toString());
+				System.out.println("-------------------------------------");
+				return true;
+			}
 
-				if ((r instanceof Function) && (s instanceof Function)
-						&& !((Function) r).toString().equals(((Function) s).toString())) {
-					if (substFunc(r, s))
+			if (((Predict) q).terms.size() != ((Predict) p).terms.size()) {
+				System.out.println(p.toString());
+				System.out.println(q.toString());
+				System.out.println("-------------------------------------");
+				theta.clear();
+				return false;
+			}
+			Term r = null;
+			Term s = null;
+
+			for (int i = 0; i < ((Predict) p).terms.size(); i++) {
+				r = ((Predict) p).terms.get(i);
+				s = ((Predict) q).terms.get(i);
+				if (!r.toString().equals(s)) {
+					System.out.println(p.toString());
+					System.out.println(q.toString());
+					System.out.println("-------------------------------------");
+					if (r instanceof Variable) {
+						 if (s instanceof Function)
+						 if(((Function) s).terms.get(0) instanceof Variable)
+						 if (((Variable) r).name.equals(((Variable)
+						 ((Function) s).terms.get(0)).name))
+						 break;
+
+						Term[] terms = { r, s };
+						theta.add(terms);
+						return unify(subst(theta, p), subst(theta, q));
+					}
+
+					if (s instanceof Variable) {
+						 if (r instanceof Function)
+						 if(((Function) r).terms.get(0) instanceof Variable)
+						 if (((Variable) s).name.equals(((Variable)
+						 ((Function) r).terms.get(0)).name))
+						 break;
+
+						Term[] terms = { s, r };
+						theta.add(terms);
+						return unify(subst(theta, p), subst(theta, q));
+					}
+
+					if ((r instanceof Function) && (s instanceof Function)
+							&& !((Function) r).toString().equals(((Function) s).toString())) {
+						substFunc(r, s);
 						return unify(subst(theta, p), subst(theta, q));
 
+					}
 				}
 			}
+			System.out.println(p.toString());
+			System.out.println(q.toString());
+			System.out.println("-------------------------------------");
+			theta.clear();
+			return false;
 		}
-		System.out.println(p.toString());
-		System.out.println(q.toString());
-		System.out.println("-------------------------------------");
-		theta.clear();
 		return false;
 	}
 
@@ -117,31 +126,33 @@ public class Unificiation {
 		return false;
 	}
 
-	private static Predict subst(ArrayList<Term[]> theta, Predict x) {
-		for (Term[] terms : theta) {
-			for (Term term : x.terms) {
-				if (term instanceof Variable) {
-					if (term.toString().equals(terms[0].toString())) {
-						x.terms.set(x.terms.indexOf(term), terms[1]);
-					}
-				} else {
-					if (term instanceof Function) {
-						for (Term fTerm : ((Function) term).terms) {
-							if (fTerm instanceof Variable) {
-								if (fTerm.toString().equals(terms[0].toString())) {
-									((Function) term).terms.set(((Function) term).terms.indexOf(fTerm), terms[1]);
-								}
-							} else {
-								if (fTerm instanceof Function) {
-									for (Term f2Term : ((Function) fTerm).terms) {
-										if (f2Term instanceof Variable) {
-											if (f2Term.toString().equals(terms[0].toString())) {
-												((Function) fTerm).terms.set(((Function) fTerm).terms.indexOf(f2Term),
-														terms[1]);
+	private static Formula subst(ArrayList<Term[]> theta, Formula x) {
+		if (x instanceof Predict) {
+			for (Term[] terms : theta) {
+				for (Term term : ((Predict) x).terms) {
+					if (term instanceof Variable) {
+						if (term.toString().equals(terms[0].toString())) {
+							((Predict) x).terms.set(((Predict) x).terms.indexOf(term), terms[1]);
+						}
+					} else {
+						if (term instanceof Function) {
+							for (Term fTerm : ((Function) term).terms) {
+								if (fTerm instanceof Variable) {
+									if (fTerm.toString().equals(terms[0].toString())) {
+										((Function) term).terms.set(((Function) term).terms.indexOf(fTerm), terms[1]);
+									}
+								} else {
+									if (fTerm instanceof Function) {
+										for (Term f2Term : ((Function) fTerm).terms) {
+											if (f2Term instanceof Variable) {
+												if (f2Term.toString().equals(terms[0].toString())) {
+													((Function) fTerm).terms
+															.set(((Function) fTerm).terms.indexOf(f2Term), terms[1]);
+												}
 											}
 										}
-									}
 
+									}
 								}
 							}
 						}
@@ -154,54 +165,54 @@ public class Unificiation {
 
 	public static void main(String[] args) {
 		// parents(x, father(x), mother(Bill)) & parents(Bill, father(Bill), y)
-		// Variable x = new Variable("x");
-		// Function father1 = new Function("father", x);
-		// Constant bill = new Constant("Bill");
-		// Function mother1 = new Function("mother", bill);
-		//
-		// Predict p = new Predict("parents", new Term[] {x,father1,mother1});
-		//
-		// Variable y = new Variable("y");
-		// Function father = new Function("father", bill);
-		// Predict q = new Predict("parents", new Term[] {bill, father, y});
+		 Variable x = new Variable("x");
+		 Function father1 = new Function("father", x);
+		 Constant bill = new Constant("Bill");
+		 Function mother1 = new Function("mother", bill);
+		
+		 Predict p = new Predict("parents", new Term[] {x,father1,mother1});
+		
+		 Variable y = new Variable("y");
+		 Function father = new Function("father", bill);
+		 Predict q = new Predict("parents", new Term[] {bill, father, y});
 
 		// P(x; g(x); g(f(a))) and P(f(u); v; v)
 
-		// Variable x = new Variable("x");
-		// Function gOfX = new Function("g", x);
-		// Constant a = new Constant("a");
-		// Function fOfA = new Function("f", a);
-		// Function gOfF = new Function("g", fOfA);
-		// Predict p = new Predict("p", new Term[] { x, gOfX, gOfF });
-		//
-		// Variable u = new Variable("u");
-		// Variable v = new Variable("v");
-		// Function fOfU = new Function("f", u);
-		// Predict q = new Predict("p", new Term[] { fOfU, v, v });
+//		Variable x = new Variable("x");
+//		Function gOfX = new Function("g", x);
+//		Constant a = new Constant("a");
+//		Function fOfA = new Function("f", a);
+//		Function gOfF = new Function("g", fOfA);
+//		Predict p = new Predict("p", new Term[] { x, gOfX, gOfF });
+//
+//		Variable u = new Variable("u");
+//		Variable v = new Variable("v");
+//		Function fOfU = new Function("f", u);
+//		Predict q = new Predict("p", new Term[] { fOfU, v, v });
 
 		// P(a; y; f(y)) and P(z; z; u)
 
 		// Constant a = new Constant("a");
 		// Variable y = new Variable("y");
-		// Function f = new Function("f",y);
-		// Predict p = new Predict("p", new Term[] {a,y,f});
+		// Function f = new Function("f", y);
+		// Predict p = new Predict("p", new Term[] { a, y, f });
 		//
 		// Variable z = new Variable("z");
 		// Variable u = new Variable("u");
-		// Predict q = new Predict("p", new Term[] {z,z,u});
+		// Predict q = new Predict("p", new Term[] { z, z, u });
 
 		// f(x; g(x); x) and f(g(u); g(g(z)); z)
-
-		Variable x = new Variable("x");
-		Function gOfX = new Function("g", x);
-		Predict p = new Predict("f", new Term[] { x, gOfX, x });
-
-		Variable u = new Variable("u");
-		Variable z = new Variable("z");
-		Function gOfZ = new Function("g", z);
-		Function gOfG = new Function("g", gOfZ);
-		Function gOfU = new Function("g", u);
-		Predict q = new Predict("f", new Term[] { gOfU, gOfG, z });
+//
+//		 Variable x = new Variable("x");
+//		 Function gOfX = new Function("g", x);
+//		 Predict p = new Predict("f", new Term[] { x, gOfX, x });
+//		
+//		 Variable u = new Variable("u");
+//		 Variable z = new Variable("z");
+//		 Function gOfZ = new Function("g", z);
+//		 Function gOfG = new Function("g", gOfZ);
+//		 Function gOfU = new Function("g", u);
+//		 Predict q = new Predict("f", new Term[] { gOfU, gOfG, z });
 		System.out.println(unify(p, q));
 		for (Term[] term : theta) {
 			System.out.println("{" + term[0].toString() + "/" + term[1].toString() + "}");
