@@ -1,15 +1,12 @@
 package eg.edu.guc.rolltheball.logic.converters;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import eg.edu.guc.rolltheball.logic.grammer.Constant;
-import eg.edu.guc.rolltheball.logic.grammer.Formula;
 import eg.edu.guc.rolltheball.logic.grammer.Function;
 import eg.edu.guc.rolltheball.logic.grammer.Predict;
 import eg.edu.guc.rolltheball.logic.grammer.Term;
 import eg.edu.guc.rolltheball.logic.grammer.Variable;
-import oracle.jrockit.jfr.jdkevents.ThrowableTracer;
 
 public class Unificiation {
 	static ArrayList<Term[]> theta = new ArrayList<Term[]>();
