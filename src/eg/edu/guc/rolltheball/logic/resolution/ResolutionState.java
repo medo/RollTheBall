@@ -30,7 +30,7 @@ public class ResolutionState implements State {
 	
 	private boolean contains(Clause c) {
 		for (Clause clause : formula)
-			if (c.equals(clause)) return true;
+			if (clause.toString().equals(c.toString()) || c.equals(clause)) return true;
 		return false;
 	}
 	
@@ -47,9 +47,9 @@ public class ResolutionState implements State {
 							Clause clause = new Clause();
 							for (Literal l1 : formula.get(i)) if (!l1.toString().equals(lit1.toString())) clause.add(Unificiation.sub(sub, l1));
 							for (Literal l2 : formula.get(j)) if (!l2.toString().equals(lit2.toString())) clause.add(Unificiation.sub(sub, l2));
-							System.out.println("STATE: " + clause);
 							if (!contains(clause)) {
 								//This is a new state
+								System.out.println("STATE -> " + i + "," + j + " " +formula);
 								Action a = new ResolutionAction(sub);
 								State s = new ResolutionState(this, clause);
 								result.put(a, s);
@@ -68,6 +68,11 @@ public class ResolutionState implements State {
 			if (l.size() == 0) return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return formula.toString();
 	}
 
 }

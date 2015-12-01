@@ -24,11 +24,11 @@ public class Unificiation {
 	 * union(theta,{s/r}) unify(subst(theta, p), subst(theta, q), theta) else
 	 * return "failure" end
 	 */
-	
+
 	public static HashMap<Variable, Term> unify(Predicate p, Predicate q) {
 		return unify_helper(p, q, new HashMap<Variable, Term>());
 	}
-	
+
 	public static HashMap<Variable, Term> unify_helper(Predicate p, Predicate q, HashMap<Variable, Term> theta) {
 		if (!q.name.equals(p.name)) {
 			System.out.println(p.toString());
@@ -85,8 +85,8 @@ public class Unificiation {
 
 				if ((r instanceof Function) && (s instanceof Function)
 						&& !((Function) r).toString().equals(((Function) s).toString())) {
-					if(substFunc(r, s, theta) != null)
-					theta = substFunc(r, s, theta);
+					if (substFunc(r, s, theta) != null)
+						theta = substFunc(r, s, theta);
 					return unify_helper(subst(theta, p), subst(theta, q), theta);
 
 				}
@@ -130,7 +130,7 @@ public class Unificiation {
 		result.predicate = subst(theta, l.predicate);
 		return result;
 	}
-	
+
 	public static Predicate subst(HashMap<Variable, Term> theta, Predicate x) {
 		for (Term term : x.terms) {
 			if (term instanceof Variable) {
@@ -166,17 +166,19 @@ public class Unificiation {
 
 	public static void main(String[] args) {
 		// parents(x, father(x), mother(Bill)) & parents(Bill, father(Bill), y)
-//		 Variable x = new Variable("x");
-//		 Function father1 = new Function("father", x);
-//		 Constant bill = new Constant("Bill");
-//		 Function mother1 = new Function("mother", bill);
-//		
-//		 Predicate p = new Predicate("parents", new Term[] { x, father1, mother1
-//		 });
-//		
-//		 Variable y = new Variable("y");
-//		 Function father = new Function("father", bill);
-//		 Predicate q = new Predicate("parents", new Term[] { bill, father, y });
+		// Variable x = new Variable("x");
+		// Function father1 = new Function("father", x);
+		// Constant bill = new Constant("Bill");
+		// Function mother1 = new Function("mother", bill);
+		//
+		// Predicate p = new Predicate("parents", new Term[] { x, father1,
+		// mother1
+		// });
+		//
+		// Variable y = new Variable("y");
+		// Function father = new Function("father", bill);
+		// Predicate q = new Predicate("parents", new Term[] { bill, father, y
+		// });
 
 		// P(x; g(x); g(f(a))) and P(f(u); v; v)
 
@@ -205,20 +207,20 @@ public class Unificiation {
 
 		// f(x; g(x); x) and f(g(u); g(g(z)); z)
 
-//		 Variable x = new Variable("x");
-//		 Function gOfX = new Function("g", x);
-//		 Predicate p = new Predicate("f", new Term[] { x, gOfX, x });
-//		
-//		 Variable u = new Variable("u");
-//		 Variable z = new Variable("z");
-//		 Function gOfZ = new Function("g", z);
-//		 Function gOfG = new Function("g", gOfZ);
-//		 Function gOfU = new Function("g", u);
-//		 Predicate q = new Predicate("f", new Term[] { gOfU, gOfG, z });
+		// Variable x = new Variable("x");
+		// Function gOfX = new Function("g", x);
+		// Predicate p = new Predicate("f", new Term[] { x, gOfX, x });
+		//
+		// Variable u = new Variable("u");
+		// Variable z = new Variable("z");
+		// Function gOfZ = new Function("g", z);
+		// Function gOfG = new Function("g", gOfZ);
+		// Function gOfU = new Function("g", u);
+		// Predicate q = new Predicate("f", new Term[] { gOfU, gOfG, z });
 		HashMap<Variable, Term> answer = unify(p, q);
-		if(answer != null)
+		if (answer != null)
 			System.err.println(answer.toString());
-		else 
+		else
 			System.err.println("False");
 	}
 
