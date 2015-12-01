@@ -5,11 +5,14 @@ import java.util.HashMap;
 
 import eg.edu.guc.rolltheball.logic.grammer.And;
 import eg.edu.guc.rolltheball.logic.grammer.BinaryOperator;
+import eg.edu.guc.rolltheball.logic.grammer.Clause;
+import eg.edu.guc.rolltheball.logic.grammer.Cloner;
 import eg.edu.guc.rolltheball.logic.grammer.Equivalent;
 import eg.edu.guc.rolltheball.logic.grammer.ForAll;
 import eg.edu.guc.rolltheball.logic.grammer.Formula;
 import eg.edu.guc.rolltheball.logic.grammer.Function;
 import eg.edu.guc.rolltheball.logic.grammer.Implies;
+import eg.edu.guc.rolltheball.logic.grammer.Literal;
 import eg.edu.guc.rolltheball.logic.grammer.Not;
 import eg.edu.guc.rolltheball.logic.grammer.Or;
 import eg.edu.guc.rolltheball.logic.grammer.Predict;
@@ -206,12 +209,12 @@ public class CNF {
             if( ((Or) f).right instanceof And){
                 Formula other = (((Or) f).left);
                 And and = (And) (((Or) f).right);
-                f = new And( new Or(other, and.left), new Or(other, and.right));
+                f = new And( new Or(Cloner.clone(other), and.left), new Or(Cloner.clone(other), and.right));
                 f = distributeAndsOrs(f);
             }else if(((Or) f).left instanceof And){
                 And and = (And) (((Or) f).left);
                 Formula other = (((Or) f).right);
-                f = new And( new Or(other, and.left), new Or(other, and.right));
+                f = new And( new Or(Cloner.clone(other), and.left), new Or(Cloner.clone(other), and.right));
                 f = distributeAndsOrs(f);
             }else{
                 ((Or) f).left = distributeAndsOrs(((Or) f).left);
@@ -223,7 +226,73 @@ public class CNF {
         return f;
     }
 
-    public Formula convertToCNF(Formula f){
+    private Clause getClause(Formula f){
+        Clause ret = new Clause();
+        if(f instanceof Not){
+            Literal l = new Literal();
+            l.negated = true;
+            l.predicate = (Predict) ((Not) f).formula;
+            ret.add(l);
+        }else if(f instanceof Predict){
+            Literal l = new Literal();
+            l.negated = false;
+            l.predicate = (Predict) f;
+            ret.add(l);
+        }else if(f instanceof Or){
+            ret.addAll(getClause(((Or) f).left));
+            ret.addAll(getClause(((Or) f).right));
+        }
+
+        return ret;
+    }
+
+    private ArrayList<Clause> clausify(Formula f) {
+        ArrayList<Clause> ret = new ArrayList<Clause>();
+
+        if(f instanceof Not || f instanceof Predict || f instanceof Or){
+            ret.add(getClause(f));
+        }else if(f instanceof And){
+            ret.addAll(clausify(((And) f).left));
+            ret.addAll(clausify(((And) f).right));
+        }
+        return ret;
+    }
+
+    private Term renameVarInTerm(Term f, HashMap<String,String> sub){
+        if(f instanceof Variable){
+            if(sub.containsKey(((Variable) f).name)){
+                ((Variable) f).name = sub.get(((Variable) f).name);
+            }else{
+                String newName = NEW_VAR_PREFIX + (newVarIdx++);
+                sub.put(((Variable) f).name, newName);
+                ((Variable) f).name = newName;
+            }
+        }else if(f instanceof Function){
+            ArrayList<Term> ts = new ArrayList<Term>();
+            for(Term t : ((Function) f).terms){
+                ts.add(renameVarInTerm(t, sub));
+            }
+            ((Function) f).terms = ts;
+        }
+        return f;
+    }
+
+    private ArrayList<Clause> renameVarsInClause(ArrayList<Clause> cl){
+
+        for(Clause c : cl){
+            HashMap<String,String> sub = new HashMap<String, String>();
+            for(Literal l : c){
+                ArrayList<Term> ts = new ArrayList<Term>();
+                for(Term t : l.predicate.terms){
+                    ts.add(renameVarInTerm(t, sub));
+                }
+                l.predicate.terms = ts;
+            }
+        }
+        return cl;
+    }
+
+    public ArrayList<Clause> convertToCNF(Formula f){
         System.out.println(f);
         // Remove Equivilance
         f = removeEquivilance(f);
@@ -253,8 +322,14 @@ public class CNF {
         // Distribute Ands and Ors
         f = distributeAndsOrs(f);
         System.out.println(f);
-        return f;
+
+
+        ArrayList<Clause> cl = clausify(f);
+        System.out.println(cl);
+
+        return renameVarsInClause(cl);
     }
+
 
     public static void main(String[] args){
 
@@ -296,7 +371,7 @@ public class CNF {
                 );
 
 
-        new CNF().convertToCNF(test);
+        System.out.println(new CNF().convertToCNF(zz));
 
     }
 
