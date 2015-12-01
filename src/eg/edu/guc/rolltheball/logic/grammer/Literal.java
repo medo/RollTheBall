@@ -37,4 +37,9 @@ public class Literal {
     public String toString(){
         return (negated? "¬" : "") + predicate.toString();
     }
+    
+    @Override
+    public int hashCode() {
+    	return toString().hashCode();
+    }
 }
